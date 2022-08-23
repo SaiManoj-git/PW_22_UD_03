@@ -1,7 +1,7 @@
 # Progress - Phase II
-
-### Models 
 -----
+## Models 
+
 **Unsupervised**  
 - [x] *Deblurring* 
 - [ ] *Denoising* 
@@ -12,16 +12,17 @@
 - [ ] *Colorization* 
 - [ ] *Image Inpainting* 
 
-
-
-### Web Application 
 -----
+
+## Web Application 
+
 ***(Using Flask, React and A SQLite database)*** 
 - [x] *Front End* 
 - [ ] *Backend* 
 
-
-
-### Pipeline 
 -----
+
+## Pipeline 
+
 - [x] *Using Apache AirFlow* 
+-----
