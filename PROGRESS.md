@@ -1,5 +1,5 @@
 # Progress - Phase II
------
+
 ## Models 
 
 **Unsupervised**  
@@ -12,7 +12,7 @@
 - [ ] *Colorization* 
 - [ ] *Image Inpainting* 
 
------
+
 
 ## Web Application 
 
@@ -20,9 +20,9 @@
 - [x] *Front End* 
 - [ ] *Backend* 
 
------
+
 
 ## Pipeline 
 
 - [x] *Using Apache AirFlow* 
------
+
