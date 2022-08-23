@@ -1,12 +1,12 @@
 # Progress - Phase II
 
 ## Models 
-**Unsupervised** \
+**Unsupervised** 
 - [x] *Deblurring* 
 - [ ] *Denoising* 
 - [ ] *Deraining* 
 
-**Supervised** \
+**Supervised** 
 - [ ] *Super-resolution* 
 - [ ] *Colorization* 
 - [ ] *Image Inpainting* 
@@ -14,7 +14,7 @@
 -----
 
 ## Web Application 
-***(Using Flask, React and A SQLite database)*** \
+***(Using Flask, React and A SQLite database)*** 
 - [x] *Front End* 
 - [ ] *Backend* 
 
