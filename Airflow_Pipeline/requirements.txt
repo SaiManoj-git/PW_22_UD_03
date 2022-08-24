@@ -1,8 +1,0 @@
-tensorflow
-os
-cv2
-random
-tqdm
-pandas
-numpy
-matplotlib
