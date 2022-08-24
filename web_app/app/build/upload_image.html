@@ -29,14 +29,16 @@
       <h1>Upload Image</h1>
       <hr>
       <form method="post" enctype="multipart/form-data">
-        <p><input type="file" id="file" name="file"><input type=submit value=Upload></p>
+        <p><input type="file" class="custom-file-input" name="image" id="image"><input type=submit value=Upload></p>
       </form>
     </div>
     <div class="col text-black ms-5">
       <h1 class="ms-4">Final Restored Image</h1>
       <hr>
-      <img src="data:image/jpeg;base64,{{ img_data }}" id="img-upload" class="img-upload mt-3 ms-4" width="400"
-        height="400" />
+      <!-- <img src="data:image/jpeg;base64,{{ img_data }}" id="img-upload" class="img-upload mt-3 ms-4" width="400"
+        height="400" /> -->
+      <img src="{{ url_for('send_uploaded_file', filename=uploaded_image) }}"  id="img-upload" class="img-upload mt-3 ms-4" width="400"
+      height="400" />
     </div>
   </div>
 

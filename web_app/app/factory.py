@@ -35,16 +35,21 @@ class MongoJsonEncoder(JSONEncoder):
 
 def deblur_image(img):
 
-    imgArray = np.asarray(img)
-    print(imgArray)
-    print(imgArray.shape)
-    model = tf.keras.models.load_model('.')
+    img_inp=img.reshape(1,128,128,3)
+    # result = autoencoder.predict(img_inp)
+    # imgArray = np.asarray(img)
+    # print(imgArray)
+    # print(imgArray.shape)
+    model = tf.keras.models.load_model('app\Deblurring_Model')
     model.summary()
 
-    result = model.predict(imgArray)
-    result = result.reshape(128, 128, 3)
-    result = ""
-    return result
+    result = model.predict(img_inp)
+    result = result.reshape(128,128,3)
+
+    result = np.ascontiguousarray(result.transpose(1,2,0))
+    img = Image.fromarray(result, 'RGB')
+    
+    return img
 
 
 def create_app():
@@ -73,33 +78,55 @@ def create_app():
         from flask import send_from_directory
         return send_from_directory(app.config["IMAGE_UPLOADS"], filename)
 
-    @app.route("/", methods=['GET', 'POST'])
-    async def hello():
-        if request.method == 'POST':
-            if 'file' not in request.files:
-                print('No file attached in request')
-                return redirect(request.url)
-            file = request.files['file']
-            if file.filename == '':
-                print('No file selected')
-                return redirect(request.url)
-            if file and check_allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                print(filename)
-                img = Image.open(file.stream)
-                with BytesIO() as buf:
-                    img.save(buf, 'jpeg')
-                    image_bytes = buf.getvalue()
-                encoded_string = base64.b64encode(image_bytes).decode()
-            # img-image image in Pil Image form
-            # pass img to API
-            img = img.resize((128, 128))
-            final_img = deblur_image(img)
-            print(final_img)
+    # @app.route("/", methods=['GET', 'POST'])
+    # def hello():
+    #     if request.method == 'POST':
+    #         if 'file' not in request.files:
+    #             print('No file attached in request')
+    #             return redirect(request.url)
+    #         file = request.files['file']
+    #         if file.filename == '':
+    #             print('No file selected')
+    #             return redirect(request.url)
+    #         if file and check_allowed_file(file.filename):
+    #             filename = secure_filename(file.filename)
+    #             print(filename)
+    #             # preprocess
+    #             image = tf.keras.preprocessing.image.load_img(filename, target_size=(128,128))
+    #             image = tf.keras.preprocessing.image.img_to_array(image).astype('float32') / 255
+    #             final_img = deblur_image(image)
+                
+    #             # final_img = Image.open(file.stream)
+    #             with BytesIO() as buf:
+    #                 final_img.save(buf, 'jpeg')
+    #                 image_bytes = buf.getvalue()
+    #             encoded_string = base64.b64encode(image_bytes).decode()
+    #         # img-image image in Pil Image form
+    #         # pass img to API
+    #         # img = img.resize((128, 128))
+    #         # final_img = deblur_image(img)
+    #         # print(final_img)
 
-            return render_template('upload_image.html', img_data=encoded_string), 200
-        else:
-            white_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg=="
-            return render_template('upload_image.html', img_data=white_image), 200
+    #         return render_template('upload_image.html', img_data=encoded_string), 200
+    #     else:
+    #         white_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg=="
+    #         return render_template('upload_image.html', img_data=white_image), 200
+
+    @app.route('/', methods=['GET', 'POST'])
+    def upload_image():
+        if request.method == "POST":
+            if request.files:
+                image = request.files["image"]
+                image.save(os.path.join(app.config["IMAGE_UPLOADS"], image.filename))
+                #  preprocess
+                img = tf.keras.preprocessing.image.load_img(os.path.join(app.config["IMAGE_UPLOADS"], image.filename), target_size=(128,128))
+                img = tf.keras.preprocessing.image.img_to_array(img).astype('float32') / 255
+                final_img = deblur_image(img)
+                final_img.save(os.path.join(app.config["IMAGE_UPLOADS"], "result.jpg"))
+
+                return render_template("upload_image.html", uploaded_image="result.jpg")
+        return render_template("upload_image.html")
+
+
 
     return app
