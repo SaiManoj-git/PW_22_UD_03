@@ -7,6 +7,9 @@ from werkzeug.utils import secure_filename
 from io import BytesIO
 from PIL import Image
 import base64
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
 
 
 from bson import json_util, ObjectId
@@ -28,6 +31,20 @@ class MongoJsonEncoder(JSONEncoder):
         if isinstance(obj, ObjectId):
             return str(obj)
         return json_util.default(obj, json_util.CANONICAL_JSON_OPTIONS)
+
+
+def deblur_image(img):
+
+    imgArray = np.asarray(img)
+    print(imgArray)
+    print(imgArray.shape)
+    model = tf.keras.models.load_model('.')
+    model.summary()
+
+    result = model.predict(imgArray)
+    result = result.reshape(128, 128, 3)
+    result = ""
+    return result
 
 
 def create_app():
@@ -57,7 +74,7 @@ def create_app():
         return send_from_directory(app.config["IMAGE_UPLOADS"], filename)
 
     @app.route("/", methods=['GET', 'POST'])
-    def hello():
+    async def hello():
         if request.method == 'POST':
             if 'file' not in request.files:
                 print('No file attached in request')
@@ -74,13 +91,15 @@ def create_app():
                     img.save(buf, 'jpeg')
                     image_bytes = buf.getvalue()
                 encoded_string = base64.b64encode(image_bytes).decode()
-
             # img-image image in Pil Image form
             # pass img to API
-            print(img)
+            img = img.resize((128, 128))
+            final_img = deblur_image(img)
+            print(final_img)
 
             return render_template('upload_image.html', img_data=encoded_string), 200
         else:
-            return render_template('upload_image.html', img_data=""), 200
+            white_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg=="
+            return render_template('upload_image.html', img_data=white_image), 200
 
     return app
