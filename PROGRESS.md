@@ -2,12 +2,12 @@
 
 ## Models 
 
-**Unsupervised**  
+**Supervised**  
 - [x] *Deblurring* 
 - [ ] *Denoising* 
 - [ ] *Deraining* 
 
-**Supervised** 
+**Unsupervised** 
 - [ ] *Super-resolution* 
 - [ ] *Colorization* 
 - [ ] *Image Inpainting* 
