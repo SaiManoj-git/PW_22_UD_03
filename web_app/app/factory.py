@@ -8,12 +8,16 @@ from io import BytesIO
 from PIL import Image
 import base64
 import numpy as np
+from matplotlib import cm
+
 import tensorflow as tf
 from tensorflow import keras
 
 
 from bson import json_util, ObjectId
 from datetime import datetime, timedelta
+
+from app.display_image import inpImage
 
 # from app.api.users import
 
@@ -40,15 +44,22 @@ def deblur_image(img):
     # imgArray = np.asarray(img)
     # print(imgArray)
     # print(imgArray.shape)
-    model = tf.keras.models.load_model('app\Deblurring_Model')
+    model = tf.keras.models.load_model(r'app\best_models\try4')
     model.summary()
 
     result = model.predict(img_inp)
-    result = result.reshape(128,128,3)
-
-    result = np.ascontiguousarray(result.transpose(1,2,0))
-    img = Image.fromarray(result, 'RGB')
     
+    # inpImage(result)        # BACKUP TO CHECK
+    
+    
+    # output = np.transpose(result[[2, 1, 0], :, :], (1, 2, 0)) * 255.0
+    # output = output.round().squeeze()
+    # output = Image.fromarray(output.astype(np.uint8))
+
+    
+    result = (result.reshape(128,128,3) * 255).astype(np.uint8)
+    img = Image.fromarray(result, mode='RGB').convert('RGB')
+    print("Image size",img.size)
     return img
 
 
@@ -76,6 +87,7 @@ def create_app():
     @app.route('/uploads/<filename>')
     def send_uploaded_file(filename=''):
         from flask import send_from_directory
+        print("here",app.config["IMAGE_UPLOADS"], filename)
         return send_from_directory(app.config["IMAGE_UPLOADS"], filename)
 
     # @app.route("/", methods=['GET', 'POST'])
@@ -122,9 +134,11 @@ def create_app():
                 img = tf.keras.preprocessing.image.load_img(os.path.join(app.config["IMAGE_UPLOADS"], image.filename), target_size=(128,128))
                 img = tf.keras.preprocessing.image.img_to_array(img).astype('float32') / 255
                 final_img = deblur_image(img)
-                final_img.save(os.path.join(app.config["IMAGE_UPLOADS"], "result.jpg"))
 
-                return render_template("upload_image.html", uploaded_image="result.jpg")
+                final_img.save(os.path.join(app.config["IMAGE_UPLOADS"], "result.png"), quality='500')
+
+                return render_template("upload_image.html", uploaded_image="result.png")
+        
         return render_template("upload_image.html")
 
 

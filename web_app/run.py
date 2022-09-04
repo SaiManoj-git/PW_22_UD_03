@@ -13,5 +13,5 @@ if __name__ == "__main__":
     app.config['IMGRES_DB_URI'] = config['PROD']['IMGRES_DB_URI']
     app.config['IMGRES_NS'] = config['PROD']['IMGRES_NS']
     app.config['SECRET_KEY'] = config['PROD']['SECRET_KEY']         # for session to be writeable
-
+    app.config['IMAGE_UPLOADS'] = r"C:\Users\gaura\Documents\sem7\capstone\PW_22_UD_03\web_app\app\build"  
     app.run()
